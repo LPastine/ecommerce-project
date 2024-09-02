@@ -38,7 +38,8 @@ export class ProductListComponent {
       this.currentCategoryId = 1;
     }
 
-    this.productService.getProductList().subscribe(
+    // now get the products for the given category id
+    this.productService.getProductList(this.currentCategoryId).subscribe(
       data => {
         this.products = data
       }
