@@ -1,10 +1,8 @@
 package com.lpastine.ecommerce.config;
 
-import com.lpastine.ecommerce.entity.Country;
-import com.lpastine.ecommerce.entity.Product;
-import com.lpastine.ecommerce.entity.ProductCategory;
-import com.lpastine.ecommerce.entity.State;
+import com.lpastine.ecommerce.entity.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurer;
@@ -20,6 +18,9 @@ import java.util.Set;
 @Configuration
 public class MyDataRestConfig implements RepositoryRestConfigurer {
 
+    @Value("${allowed.origins}")
+    private String[] theAllowedOrigins;
+
     private EntityManager entityManager;
 
     @Autowired
@@ -33,22 +34,29 @@ public class MyDataRestConfig implements RepositoryRestConfigurer {
                 HttpMethod.PUT,
                 HttpMethod.POST,
                 HttpMethod.DELETE,
+                HttpMethod.PATCH,
         };
 
-        // disable HTTP methods for Product: PUT, POST and DELETE
+        // disable HTTP methods for Product: PUT, POST, DELETE and PATCH
         disableHttpMethods(Product.class, config, theUnsupportedActions);
 
-        // disable HTTP methods for ProductCategory: PUT, POST and DELETE
+        // disable HTTP methods for ProductCategory: PUT, POST, DELETE and PATCH
         disableHttpMethods(ProductCategory.class, config, theUnsupportedActions);
 
-        // disable HTTP methods for Country: PUT, POST and DELETE
+        // disable HTTP methods for Country: PUT, POST, DELETE and PATCH
         disableHttpMethods(Country.class, config, theUnsupportedActions);
 
-        // disable HTTP methods for State: PUT, POST and DELETE
+        // disable HTTP methods for State: PUT, POST, DELETE and PATCH
         disableHttpMethods(State.class, config, theUnsupportedActions);
+
+        // disable HTTP methods for Order: PUT, POST, DELETE and PATCH
+        disableHttpMethods(Order.class, config, theUnsupportedActions);
 
         // call an internal helper method
         exposeIds(config);
+
+        // configure cors mapping
+        cors.addMapping(config.getBasePath() + "/**").allowedOrigins(theAllowedOrigins);
     }
 
     private static void disableHttpMethods(Class theClass,RepositoryRestConfiguration config, HttpMethod[] theUnsupportedActions) {
